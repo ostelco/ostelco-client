@@ -1,0 +1,8 @@
+{
+  "name": "panacea-client-2018",
+  "app_id": "f2aea0d2",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
