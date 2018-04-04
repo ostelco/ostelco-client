@@ -28,7 +28,27 @@
       Please contact us so we can resolve the issue for you.
     </ion-card-content>
   </ion-card>
+
   <ion-card *ngIf="profile && profile.subscription">
-    {{ profile.subscription.usage }}
+    <ion-card-header>
+      Usage:
+    </ion-card-header>
   </ion-card>
+
+  <ion-card *ngIf="profile && profile.subscription">
+    <ion-card-header>{{ profile.subscription.usage }}</ion-card-header>
+  </ion-card>
+
+
+  <ion-card *ngIf="offers">
+    <ion-card-header>
+      Top up:
+    </ion-card-header>
+  </ion-card>
+
+  <ion-grid>
+    <ion-col *ngFor="let offer of offers">
+      <button ion-button>{{ offer.label }}</button>
+    </ion-col>
+  </ion-grid>
 </ion-content>
