@@ -29,7 +29,7 @@ export class LoginPage {
     await loader.present();
     this.user.login(this.account).then((resp) => {
       return loader.dismiss()
-        .then(() => this.navCtrl.push(MainPage))
+        .then(() => this.navCtrl.setRoot(MainPage));
     }).catch( (err) => {
       loader.dismiss()
         .then(() => this.helpers.displayErrorAlert(err));

@@ -31,7 +31,7 @@ export class SignupPage {
     this.user.signup(this.account)
       .then(resp => {
         loader.dismiss()
-          .then(() => this.navCtrl.push(MainPage));
+          .then(() => this.navCtrl.setRoot(MainPage));
       })
       .catch(err => {
         loader.dismiss().then(() => this.helpers.displayErrorAlert(err));
