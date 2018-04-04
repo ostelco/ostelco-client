@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
@@ -20,30 +19,20 @@ export class LoginPage {
     password: 'testtest'
   };
 
-  // Our translated text strings
-  private loginErrorString: string;
-
   constructor(public navCtrl: NavController,
     public user: User,
-    public toastCtrl: ToastController,
-    public helpers: HelpersProvider,
-    public translateService: TranslateService) {
-
-    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
-      this.loginErrorString = value;
-    })
-  }
+    public helpers: HelpersProvider) { }
 
   // Attempt to login in through our User service
-  doLogin() {
+  async doLogin(): Promise<void> {
     const loader = this.helpers.createLoader();
-    loader.present();
+    await loader.present();
     this.user.login(this.account).then((resp) => {
-      loader.dismiss();
-      this.navCtrl.push(MainPage);
+      return loader.dismiss()
+        .then(() => this.navCtrl.push(MainPage))
     }).catch( (err) => {
-      loader.dismiss();
-      this.helpers.displayErrorAlert(err);
+      loader.dismiss()
+        .then(() => this.helpers.displayErrorAlert(err));
     });
   }
 }

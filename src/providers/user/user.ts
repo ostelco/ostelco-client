@@ -2,10 +2,9 @@ import 'rxjs/add/operator/toPromise';
 
 import { Injectable } from '@angular/core';
 
-import { Api } from '../api/api';
 import {PanaceaApiProvider} from "../panacea-api/panacea-api";
 import {AngularFireAuth} from "angularfire2/auth";
-import {HelpersProvider} from "../helpers/helpers";
+import {SignupFormModel} from "../../models/signup-form-model";
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -30,13 +29,13 @@ import {HelpersProvider} from "../helpers/helpers";
 export class User {
   _user: UserProfileModel;
 
-  constructor(public api: Api, public papi: PanaceaApiProvider, public afAuth: AngularFireAuth) { }
+  constructor(public papi: PanaceaApiProvider, public afAuth: AngularFireAuth) { }
 
   /**
    * Send a POST request to our login endpoint with the data
    * the user entered on the form.
    */
-  async login(accountInfo: LoginFormModel): Promise<any> {
+  async login(accountInfo: LoginFormModel): Promise<UserProfileModel> {
     const result = await this.afAuth.auth.signInWithEmailAndPassword(accountInfo.email, accountInfo.password);
     if (result) {
       const profile = await this.papi.getUserProfileById(result.uid);
@@ -47,7 +46,7 @@ export class User {
         throw new Error('There is no user profile corresponding to this identifier. The user may have been deleted.');
       }
     } else {
-      throw new Error('Unknown error. Login method returned: ${result}');
+      throw new Error(`Unknown error. Login method returned: ${result}`);
     }
   }
 
@@ -55,33 +54,38 @@ export class User {
    * Send a POST request to our signup endpoint with the data
    * the user entered on the form.
    */
-  signup(accountInfo: any) {
-    let seq = this.api.post('signup', accountInfo).share();
+  async signup(accountInfo: SignupFormModel): Promise<UserProfileModel|null> {
+    const result = await this.afAuth.auth.createUserAndRetrieveDataWithEmailAndPassword(accountInfo.email, accountInfo.password);
+    if (result && result.user) {
+      const profile = await this.papi.createUserProfile(result.user.uid, {
+        id: result.user.uid,
+        email: result.user.email,
+        name: accountInfo.name
+      });
 
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
+      if (profile) {
+        this._loggedIn(profile);
+        return profile;
+      } else {
+        throw new Error(`Unknown error. Create user profile method returned: ${result}`);
       }
-    }, err => {
-      console.error('ERROR', err);
-    });
-
-    return seq;
+    } else {
+      throw new Error(`Unknown error. Signup method returned: ${result}`);
+    }
   }
 
   /**
    * Log the user out, which forgets the session
    */
-  logout() {
+  async logout(): Promise<void> {
     this._user = null;
-    this.afAuth.auth.signOut();
+    await this.afAuth.auth.signOut();
   }
 
   /**
    * Process a login/signup response to store user data
    */
-  _loggedIn(resp: UserProfileModel) {
+  _loggedIn(resp: UserProfileModel): void {
     this._user = resp;
   }
 }
