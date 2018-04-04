@@ -5,6 +5,9 @@ import { Injectable } from '@angular/core';
 import {PanaceaApiProvider} from "../panacea-api/panacea-api";
 import {AngularFireAuth} from "angularfire2/auth";
 import {SignupFormModel} from "../../models/signup-form-model";
+import {UserProfileModel} from "../../models/user-profile-model";
+import {ReplaySubject} from "rxjs/ReplaySubject";
+import {NavController} from "ionic-angular";
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -27,9 +30,24 @@ import {SignupFormModel} from "../../models/signup-form-model";
  */
 @Injectable()
 export class User {
-  _user: UserProfileModel;
+  profile: UserProfileModel;
+  authNotifier = new ReplaySubject<boolean>();
 
-  constructor(public papi: PanaceaApiProvider, public afAuth: AngularFireAuth) { }
+  constructor(public papi: PanaceaApiProvider, public afAuth: AngularFireAuth) {
+    this.afAuth.authState.take(1).subscribe(user => {
+      if (user) {
+        this.papi.getUserProfileById(user.uid)
+          .then((profile: UserProfileModel) => this._loggedIn(profile))
+          .catch(err => {
+            console.log(`Unhandled error: ${err.message}`);
+            console.error(err);
+            this.authNotifier.next(false);
+          })
+      } else {
+        this.authNotifier.next(false);
+      }
+    })
+  }
 
   /**
    * Send a POST request to our login endpoint with the data
@@ -78,7 +96,8 @@ export class User {
    * Log the user out, which forgets the session
    */
   async logout(): Promise<void> {
-    this._user = null;
+    this.profile = null;
+    this.authNotifier.next(false);
     await this.afAuth.auth.signOut();
   }
 
@@ -86,6 +105,21 @@ export class User {
    * Process a login/signup response to store user data
    */
   _loggedIn(resp: UserProfileModel): void {
-    this._user = resp;
+    this.profile = resp;
+    this.authNotifier.next(true);
+  }
+
+  isAuthenticated(nav: NavController): boolean | Promise<any> {
+    return this.authNotifier.take(1).toPromise().then(isAuthenticated => {
+      if (isAuthenticated) {
+        return true
+      } else {
+        setTimeout(() => { nav.setRoot("LoginPage") }, 0);
+        return true
+      }
+    }).catch(() => {
+      setTimeout(() => { nav.setRoot("LoginPage") }, 0);
+      return false
+    });
   }
 }
