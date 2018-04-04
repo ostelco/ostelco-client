@@ -8,13 +8,18 @@
 
   <ion-navbar>
     <ion-title>subscription</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="refresh()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-  <ion-card *ngIf="!user.profile.subscription">
+  <ion-card *ngIf="profile && !profile.subscription">
     <ion-card-header>
       Ninja registration
     </ion-card-header>
@@ -22,5 +27,8 @@
       We don't know how, but you've secretly managed to create a profile without a subscription! <br/>
       Please contact us so we can resolve the issue for you.
     </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="profile && profile.subscription">
+    {{ profile.subscription.usage }}
   </ion-card>
 </ion-content>

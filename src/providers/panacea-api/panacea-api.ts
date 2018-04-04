@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AngularFirestore} from "angularfire2/firestore";
+import {UserProfileModel} from "../../models/user-profile-model";
 
 @Injectable()
 export class PanaceaApiProvider {
