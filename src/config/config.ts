@@ -6,3 +6,5 @@ export const FIREBASE_CREDENTIALS = {
   storageBucket: "panacea-39e5a.appspot.com",
   messagingSenderId: "141232844658"
 };
+
+export const STRIPE_PUBLISHABLE_API_KEY = 'pk_test_1QjxfVfTVjYiEw970ERQQCQO';
