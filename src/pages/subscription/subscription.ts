@@ -5,7 +5,7 @@ import {PanaceaApiProvider} from "../../providers/panacea-api/panacea-api";
 import {UserProfileModel} from "../../models/user-profile-model";
 import {HelpersProvider} from "../../providers/helpers/helpers";
 import {OfferModel} from "../../models/offer-model";
-§import {STRIPE_PUBLISHABLE_API_KEY} from "../../config/config";
+import {STRIPE_PUBLISHABLE_API_KEY} from "../../config/config";
 import {TranslateService} from "@ngx-translate/core";
 
 declare var StripeCheckout: any;
