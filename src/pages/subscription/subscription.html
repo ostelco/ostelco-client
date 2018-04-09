@@ -48,7 +48,7 @@
 
   <ion-grid>
     <ion-col *ngFor="let offer of offers">
-      <button ion-button>{{ offer.label }}</button>
+      <button ion-button (click)="onOfferClick(offer)">{{ offer.label }}</button>
     </ion-col>
   </ion-grid>
 </ion-content>
