@@ -8,3 +8,5 @@ export const FIREBASE_CREDENTIALS = {
 };
 
 export const STRIPE_PUBLISHABLE_API_KEY = 'pk_test_1QjxfVfTVjYiEw970ERQQCQO';
+
+export const APP_VERSION = '0.0.1';
