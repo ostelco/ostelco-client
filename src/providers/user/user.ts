@@ -31,7 +31,7 @@ import {NavController} from "ionic-angular";
 @Injectable()
 export class User {
   profile: UserProfileModel;
-  authNotifier = new ReplaySubject<boolean>();
+  authenticated: boolean = false;
 
   constructor(public papi: PanaceaApiProvider, public afAuth: AngularFireAuth) {
     this.afAuth.authState.take(1).subscribe(user => {
@@ -41,10 +41,10 @@ export class User {
           .catch(err => {
             console.log(`Unhandled error: ${err.message}`);
             console.error(err);
-            this.authNotifier.next(false);
+            this.authenticated = false;
           })
       } else {
-        this.authNotifier.next(false);
+        this.authenticated = false;
       }
     })
   }
@@ -97,7 +97,7 @@ export class User {
    */
   async logout(): Promise<void> {
     this.profile = null;
-    this.authNotifier.next(false);
+    this.authenticated = false;
     await this.afAuth.auth.signOut();
   }
 
@@ -106,20 +106,16 @@ export class User {
    */
   _loggedIn(resp: UserProfileModel): void {
     this.profile = resp;
-    this.authNotifier.next(true);
+    this.authenticated = true;
+    // this.authNotifier.next(true);
   }
 
-  isAuthenticated(nav: NavController): boolean | Promise<any> {
-    return this.authNotifier.take(1).toPromise().then(isAuthenticated => {
-      if (isAuthenticated) {
-        return true
-      } else {
-        setTimeout(() => { nav.setRoot("LoginPage") }, 0);
-        return true
-      }
-    }).catch(() => {
+  isAuthenticated(nav: NavController): boolean {
+    if (this.authenticated) {
+      return true
+    } else {
       setTimeout(() => { nav.setRoot("LoginPage") }, 0);
-      return false
-    });
+      return true
+    }
   }
 }
