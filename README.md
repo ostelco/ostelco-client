@@ -2,7 +2,7 @@
 
 A not complete set of steps to produce a new release:
 - Create a new branch with the version you want to release
-- Bump the version in confix.xml, package.json and config.ts.
+- Bump the version in config.xml, package.json and config.ts.
 - don't merge before a new version has been release in app store / play store. That way we can continue working on the code and fixing bugs on a release without mixing. 
 
 # The Ionic Super Starter 🎮
