@@ -52,7 +52,7 @@ export class SubscriptionPage {
     this.refresh();
   }
 
-  ionViewCanEnter(): boolean | Promise<any> {
+  ionViewCanEnter(): boolean {
     return this.user.isAuthenticated(this.navCtrl);
   }
 
